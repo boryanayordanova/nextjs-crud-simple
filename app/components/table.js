@@ -1,4 +1,35 @@
-export default function Table({ users }) {
+import { toast } from "react-toastify";
+export default function Table({ users, fetchUsers }) {
+  const deleteUser = async (_id) => {
+    console.log(_id);
+    try {
+      const response = await fetch(`/api/users`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({ _id }),
+      });
+
+      if (response.ok) {
+        console.log("User deleted successfully");
+        toast.success("User deleted successfully");
+        fetchUsers();
+      } else {
+        console.log("Error deleting user");
+        toast.error("Error deleting user");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error);
+    }
+  };
+
+  const editUser = (user) => {
+    console.log(user);
+  };
+
   return (
     <>
       <div className="table container mx-auto my-10 ">
@@ -13,8 +44,8 @@ export default function Table({ users }) {
           </thead>
           <tbody>
             {users
-              // .slice()
-              // .reverse()
+              .slice()
+              .reverse()
               .map((user) => (
                 <tr key={user._id}>
                   <td>{user._id}</td>
@@ -23,10 +54,16 @@ export default function Table({ users }) {
                   <td>{user.email}</td>
 
                   <td className="px-8 py-2 flex justify-evenly hover:cursor-pointer">
-                    <button className="bg-green-500 border rounded-md w-1/3 text-white ">
+                    <button
+                      className="bg-green-500 border rounded-md w-1/3 text-white"
+                      onClick={() => editUser(user)}
+                    >
                       Edit
                     </button>
-                    <button className="bg-red-500 border rounded-md w-1/3 text-white ">
+                    <button
+                      className="bg-red-500 border rounded-md w-1/3 text-white"
+                      onClick={() => deleteUser(user._id)}
+                    >
                       Delete
                     </button>
                   </td>

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Connect } from "@/database/connection";
+import { toast } from "react-toastify";
 
-export default function Form() {
+export default function Form({ fetchUsers }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
@@ -10,7 +10,7 @@ export default function Form() {
     e.preventDefault();
     console.log(name, email);
     if (name == "" || email == "") {
-      alert("Please fill all the fields");
+      toast.error("Please fill all the fields");
     }
 
     try {
@@ -25,13 +25,22 @@ export default function Form() {
       if (response.ok) {
         const res = await response.json();
         console.log("res", res);
-        alert("User created successfully");
+        toast.success("User created successfully");
+        fetchUsers(); // Refresh users after adding
+        clearForm();
       } else {
-        alert("Failed to create user");
+        const errorData = await response.json();
+        toast.error(errorData.message);
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
+  };
+
+  const clearForm = () => {
+    setName("");
+    setEmail("");
   };
 
   return (
